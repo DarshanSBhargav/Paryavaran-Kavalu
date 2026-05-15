@@ -21,12 +21,6 @@
 - **Location**: Google Play Services Location
 - **Media**: CameraX / Activity Result APIs for photo capture and processing
 
-## 📸 Screenshots
-
-| Role Selection | Guardian Portal (Map) | Lodge Complaint |
-|---|---|---|
-| ![Role Selection](https://via.placeholder.com/200x400?text=Role+Selection) | ![Map View](https://via.placeholder.com/200x400?text=Map+View) | ![Report Dialog](https://via.placeholder.com/200x400?text=Report+Dialog) |
-
 ## ⚙️ Setup & Installation
 
 ### Prerequisites
