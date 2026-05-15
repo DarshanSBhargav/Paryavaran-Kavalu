@@ -128,13 +128,15 @@ fun MainAppContent(viewModel: WasteViewModel, role: UserRole, onBack: () -> Unit
     var selectedReport by remember { mutableStateOf<WasteReport?>(null) }
     var isLocating by remember { mutableStateOf(false) }
 
-    val permissions = mutableListOf(
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.CAMERA
-    ).apply {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            add(Manifest.permission.ACCESS_MEDIA_LOCATION)
-        }
+    val permissions = remember {
+        mutableListOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.CAMERA
+        ).apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                add(Manifest.permission.ACCESS_MEDIA_LOCATION)
+            }
+        }.toTypedArray()
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -143,7 +145,7 @@ fun MainAppContent(viewModel: WasteViewModel, role: UserRole, onBack: () -> Unit
     )
 
     LaunchedEffect(Unit) {
-        permissionLauncher.launch(permissions.toTypedArray())
+        permissionLauncher.launch(permissions)
     }
 
     val cameraPositionState = rememberCameraPositionState {

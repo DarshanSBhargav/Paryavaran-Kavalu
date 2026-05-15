@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.ParyavaranKavalu" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Use a modern Material 3 theme as the parent for a Compose app -->
+    <style name="Theme.ParyavaranKavalu" parent="Theme.Material3.DayNight.NoActionBar" />
 </resources>
