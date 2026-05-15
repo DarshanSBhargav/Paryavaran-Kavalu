@@ -19,6 +19,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,9 +28,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.automirrored.rounded.List
-import androidx.compose.material.icons.automirrored.rounded.NoteAdd
+import androidx.compose.material.icons.automirrored.rounded.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -39,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -92,101 +92,165 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun RoleSelectionScreen(onRoleSelected: (UserRole) -> Unit) {
+    var visible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { visible = true }
+
     Box(
         Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    listOf(EcoLightGreen.copy(alpha = 0.2f), Color.White)
+                    listOf(EcoLightGreen.copy(alpha = 0.3f), Color.White, EcoGreen.copy(alpha = 0.1f))
                 )
-            ),
-        contentAlignment = Alignment.Center
+            )
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(24.dp)
+        // Decorative background elements
+        Icon(
+            Icons.Rounded.NaturePeople,
+            null,
+            Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 40.dp, end = (-20).dp)
+                .size(240.dp)
+                .graphicsLayer(alpha = 0.05f)
+        )
+        Icon(
+            Icons.Rounded.Forest,
+            null,
+            Modifier
+                .align(Alignment.BottomStart)
+                .padding(bottom = 20.dp, start = (-30).dp)
+                .size(200.dp)
+                .graphicsLayer(alpha = 0.05f)
+        )
+
+        AnimatedVisibility(
+            visible = visible,
+            enter = fadeIn(tween(1200)) + slideInVertically(tween(1200)) { it / 3 },
+            modifier = Modifier.fillMaxSize()
         ) {
-            Surface(
-                shape = CircleShape,
-                color = EcoGreen.copy(alpha = 0.1f),
-                modifier = Modifier.size(140.dp)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp)
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        Icons.Rounded.Eco,
-                        null,
-                        Modifier.size(80.dp),
-                        tint = EcoGreen
-                    )
+                // Animated Logo
+                val infiniteTransition = rememberInfiniteTransition(label = "logo")
+                val scale by infiniteTransition.animateFloat(
+                    initialValue = 1f,
+                    targetValue = 1.05f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(2000, easing = FastOutSlowInEasing),
+                        repeatMode = RepeatMode.Reverse
+                    ),
+                    label = "scale"
+                )
+
+                Surface(
+                    shape = CircleShape,
+                    color = Color.White,
+                    shadowElevation = 12.dp,
+                    modifier = Modifier.size(160.dp).graphicsLayer(scaleX = scale, scaleY = scale)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            Icons.Rounded.Eco,
+                            null,
+                            Modifier.size(100.dp),
+                            tint = EcoGreen
+                        )
+                    }
                 }
-            }
-            Spacer(Modifier.height(24.dp))
-            Text(
-                "Paryavaran-Kavalu",
-                style = MaterialTheme.typography.displaySmall,
-                fontWeight = FontWeight.ExtraBold,
-                color = EcoGreen,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                "Environmental Guardian System",
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.Gray,
-                letterSpacing = 2.sp
-            )
-            Spacer(Modifier.height(48.dp))
-            RoleCard(
-                "Citizen Portal",
-                "Report blackspots & earn Eco-Karma",
-                Icons.Rounded.Person,
-                MaterialTheme.colorScheme.primaryContainer
-            ) {
-                onRoleSelected(UserRole.CITIZEN)
-            }
-            Spacer(Modifier.height(16.dp))
-            RoleCard(
-                "Authority Monitor",
-                "Monitor & Verify city cleanups",
-                Icons.Rounded.AdminPanelSettings,
-                MaterialTheme.colorScheme.secondaryContainer
-            ) {
-                onRoleSelected(UserRole.AUTHORITY)
+                
+                Spacer(Modifier.height(40.dp))
+                
+                Text(
+                    "Paryavaran-Kavalu",
+                    style = MaterialTheme.typography.displaySmall,
+                    fontWeight = FontWeight.Black,
+                    color = EcoGreen,
+                    textAlign = TextAlign.Center
+                )
+                
+                Spacer(Modifier.height(8.dp))
+                
+                Text(
+                    "Be the Guardian of your Environment",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.DarkGray.copy(alpha = 0.6f),
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Medium
+                )
+                
+                Spacer(Modifier.height(64.dp))
+                
+                Text(
+                    "CHOOSE YOUR PORTAL",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = EcoGreen,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.align(Alignment.Start).padding(start = 12.dp, bottom = 16.dp),
+                    letterSpacing = 2.sp
+                )
+
+                RoleCard(
+                    "Citizen Portal",
+                    "Report issues & earn Eco-Karma",
+                    Icons.Rounded.VolunteerActivism,
+                    EcoGreen
+                ) {
+                    onRoleSelected(UserRole.CITIZEN)
+                }
+                
+                Spacer(Modifier.height(20.dp))
+                
+                RoleCard(
+                    "Authority Monitor",
+                    "Verify cleanups & city health",
+                    Icons.Rounded.Shield,
+                    Color(0xFF2E5BFF)
+                ) {
+                    onRoleSelected(UserRole.AUTHORITY)
+                }
             }
         }
     }
 }
 
 @Composable
-fun RoleCard(title: String, desc: String, icon: ImageVector, color: Color, onClick: () -> Unit) {
+fun RoleCard(title: String, desc: String, icon: ImageVector, accentColor: Color, onClick: () -> Unit) {
     Card(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(110.dp),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = color),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .height(120.dp),
+        shape = RoundedCornerShape(32.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Row(
             Modifier
                 .fillMaxSize()
-                .padding(20.dp),
+                .padding(horizontal = 24.dp, vertical = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                shape = RoundedCornerShape(12.dp),
-                color = Color.White.copy(alpha = 0.5f),
-                modifier = Modifier.size(50.dp)
+                shape = RoundedCornerShape(16.dp),
+                color = accentColor.copy(alpha = 0.12f),
+                modifier = Modifier.size(64.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(icon, null, Modifier.size(30.dp), tint = Color.DarkGray)
+                    Icon(icon, null, Modifier.size(36.dp), tint = accentColor)
                 }
             }
             Spacer(Modifier.width(20.dp))
-            Column {
-                Text(title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
-                Text(desc, style = MaterialTheme.typography.bodyMedium, color = Color.DarkGray.copy(alpha = 0.7f))
+            Column(Modifier.weight(1f)) {
+                Text(title, fontWeight = FontWeight.ExtraBold, style = MaterialTheme.typography.titleLarge, color = Color.Black)
+                Text(desc, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
             }
+            Icon(Icons.AutoMirrored.Rounded.ArrowForwardIos, null, Modifier.size(18.dp), tint = Color.LightGray)
         }
     }
 }
@@ -305,13 +369,11 @@ fun MainAppContent(viewModel: WasteViewModel, role: UserRole, onBack: () -> Unit
                 onReport = { type, photo, photoLocation ->
                     isLocating = true
                     scope.launch {
-                        // Optimizing location fetch: using a timeout to prevent "infinite" waiting
                         val finalLocation = photoLocation ?: try {
-                            withTimeout(5000) { // 5 second timeout
+                            withTimeout(5000) {
                                 getOneTimeLocation(context)?.let { LatLng(it.latitude, it.longitude) }
                             }
                         } catch (e: Exception) {
-                            // Fallback to last known if current fails or times out
                             getLastKnownLocation(context)?.let { LatLng(it.latitude, it.longitude) }
                         }
                         
@@ -517,7 +579,6 @@ fun ReportDetailContent(report: WasteReport, isAuthority: Boolean, onMarkCleaned
         Text("Satellite Location:", style = MaterialTheme.typography.labelLarge, color = EcoGreen)
         Spacer(Modifier.height(8.dp))
         
-        // Mini Satellite Map view for the blackspot
         Box(Modifier.fillMaxWidth().height(180.dp).clip(RoundedCornerShape(20.dp)).border(1.dp, Color.LightGray, RoundedCornerShape(20.dp))) {
             GoogleMap(
                 modifier = Modifier.fillMaxSize(),
@@ -773,7 +834,6 @@ suspend fun loadBitmapFromUri(context: Context, uri: Uri): Bitmap? = withContext
 }
 
 suspend fun compressBitmap(bitmap: Bitmap): Bitmap = withContext(Dispatchers.IO) {
-    // Optimization: Scale down if the image is too large before compressing
     val maxDimension = 1200
     val originalWidth = bitmap.width
     val originalHeight = bitmap.height
@@ -791,10 +851,9 @@ suspend fun compressBitmap(bitmap: Bitmap): Bitmap = withContext(Dispatchers.IO)
     }
 
     val stream = ByteArrayOutputStream()
-    var q = 80 // Start with 80 quality for speed
+    var q = 80 
     scaledBitmap.compress(Bitmap.CompressFormat.JPEG, q, stream)
     
-    // Quick exit if already small enough
     if (stream.size() > 500 * 1024) {
         while (stream.size() > 500 * 1024 && q > 20) {
             stream.reset(); q -= 20
